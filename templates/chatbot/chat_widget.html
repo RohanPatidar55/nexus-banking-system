@@ -1,0 +1,606 @@
+{# Nexus AI Banking Assistant — Floating Chat Widget #}
+{# Include this via: {% include 'chatbot/chat_widget.html' %} in base.html #}
+
+{% if request.user.is_authenticated %}
+<style>
+    /* ═══════════════════════════════════════════════════
+       NEXUS CHAT WIDGET — Premium Dark Glassmorphism
+       ═══════════════════════════════════════════════════ */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    :root {
+        --nexus-primary: #6366f1;
+        --nexus-primary-hover: #818cf8;
+        --nexus-accent: #f472b6;
+        --nexus-surface: rgba(15, 23, 42, 0.92);
+        --nexus-surface-light: rgba(30, 41, 59, 0.85);
+        --nexus-glass: rgba(255, 255, 255, 0.06);
+        --nexus-glass-border: rgba(255, 255, 255, 0.1);
+        --nexus-text: #f1f5f9;
+        --nexus-text-muted: #94a3b8;
+        --nexus-success: #34d399;
+        --nexus-radius: 20px;
+    }
+
+    /* ─── Floating Toggle Button ─── */
+    #nexus-chat-toggle {
+        position: fixed;
+        bottom: 28px;
+        right: 28px;
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--nexus-primary), #a855f7);
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow:
+            0 8px 32px rgba(99, 102, 241, 0.4),
+            0 0 0 0 rgba(99, 102, 241, 0.3);
+        z-index: 9999;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        animation: nexus-pulse 2.5s ease-in-out infinite;
+    }
+
+    #nexus-chat-toggle:hover {
+        transform: scale(1.08);
+        box-shadow: 0 12px 40px rgba(99, 102, 241, 0.55);
+    }
+
+    #nexus-chat-toggle svg {
+        width: 28px;
+        height: 28px;
+        fill: white;
+        transition: transform 0.3s ease;
+    }
+
+    #nexus-chat-toggle.open svg {
+        transform: rotate(180deg);
+    }
+
+    @keyframes nexus-pulse {
+        0%, 100% { box-shadow: 0 8px 32px rgba(99, 102, 241, 0.4), 0 0 0 0 rgba(99, 102, 241, 0.3); }
+        50% { box-shadow: 0 8px 32px rgba(99, 102, 241, 0.4), 0 0 0 12px rgba(99, 102, 241, 0); }
+    }
+
+    /* Notification dot */
+    #nexus-chat-toggle .nexus-dot {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        width: 14px;
+        height: 14px;
+        background: var(--nexus-accent);
+        border-radius: 50%;
+        border: 2px solid #0f172a;
+        animation: nexus-dot-pop 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    }
+
+    @keyframes nexus-dot-pop {
+        0% { transform: scale(0); }
+        100% { transform: scale(1); }
+    }
+
+    /* ─── Chat Window ─── */
+    #nexus-chat-window {
+        position: fixed;
+        bottom: 104px;
+        right: 28px;
+        width: 400px;
+        max-width: calc(100vw - 32px);
+        height: 560px;
+        max-height: calc(100vh - 140px);
+        background: var(--nexus-surface);
+        backdrop-filter: blur(24px) saturate(1.5);
+        -webkit-backdrop-filter: blur(24px) saturate(1.5);
+        border: 1px solid var(--nexus-glass-border);
+        border-radius: var(--nexus-radius);
+        display: flex;
+        flex-direction: column;
+        z-index: 9998;
+        font-family: 'Inter', system-ui, sans-serif;
+        overflow: hidden;
+
+        /* Entry animation */
+        opacity: 0;
+        transform: translateY(24px) scale(0.95);
+        pointer-events: none;
+        transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow:
+            0 24px 64px rgba(0, 0, 0, 0.4),
+            0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+    }
+
+    #nexus-chat-window.visible {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        pointer-events: all;
+    }
+
+    /* ─── Header ─── */
+    .nexus-header {
+        padding: 18px 20px;
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(168, 85, 247, 0.1));
+        border-bottom: 1px solid var(--nexus-glass-border);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-shrink: 0;
+    }
+
+    .nexus-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, var(--nexus-primary), #a855f7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        flex-shrink: 0;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+
+    .nexus-header-info {
+        flex: 1;
+    }
+
+    .nexus-header-info h3 {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--nexus-text);
+        letter-spacing: -0.01em;
+    }
+
+    .nexus-header-info span {
+        font-size: 12px;
+        color: var(--nexus-success);
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .nexus-header-info span::before {
+        content: '';
+        width: 7px;
+        height: 7px;
+        background: var(--nexus-success);
+        border-radius: 50%;
+        display: inline-block;
+        animation: nexus-blink 2s ease-in-out infinite;
+    }
+
+    @keyframes nexus-blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.4; }
+    }
+
+    .nexus-close-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
+        background: var(--nexus-glass);
+        border: 1px solid var(--nexus-glass-border);
+        color: var(--nexus-text-muted);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        font-size: 16px;
+    }
+
+    .nexus-close-btn:hover {
+        background: rgba(255, 255, 255, 0.12);
+        color: var(--nexus-text);
+    }
+
+    /* ─── Messages Area ─── */
+    .nexus-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        scroll-behavior: smooth;
+    }
+
+    /* Scrollbar */
+    .nexus-messages::-webkit-scrollbar {
+        width: 5px;
+    }
+    .nexus-messages::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .nexus-messages::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.12);
+        border-radius: 10px;
+    }
+
+    /* Message bubble */
+    .nexus-msg {
+        max-width: 85%;
+        padding: 12px 16px;
+        border-radius: 16px;
+        font-size: 13.5px;
+        line-height: 1.55;
+        color: var(--nexus-text);
+        word-break: break-word;
+        animation: nexus-msg-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+    }
+
+    @keyframes nexus-msg-in {
+        0% { opacity: 0; transform: translateY(10px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .nexus-msg.bot {
+        align-self: flex-start;
+        background: var(--nexus-surface-light);
+        border: 1px solid var(--nexus-glass-border);
+        border-bottom-left-radius: 6px;
+    }
+
+    .nexus-msg.user {
+        align-self: flex-end;
+        background: linear-gradient(135deg, var(--nexus-primary), #7c3aed);
+        border-bottom-right-radius: 6px;
+    }
+
+    .nexus-msg .nexus-time {
+        display: block;
+        font-size: 10px;
+        color: rgba(255, 255, 255, 0.4);
+        margin-top: 6px;
+        text-align: right;
+    }
+
+    .nexus-msg.bot .nexus-time {
+        text-align: left;
+    }
+
+    /* Markdown-like formatting in messages */
+    .nexus-msg strong, .nexus-msg b {
+        font-weight: 600;
+        color: #e2e8f0;
+    }
+
+    .nexus-msg.bot strong, .nexus-msg.bot b {
+        color: var(--nexus-primary-hover);
+    }
+
+    /* ─── Typing Indicator ─── */
+    .nexus-typing {
+        align-self: flex-start;
+        padding: 14px 20px;
+        background: var(--nexus-surface-light);
+        border: 1px solid var(--nexus-glass-border);
+        border-radius: 16px;
+        border-bottom-left-radius: 6px;
+        display: none;
+        gap: 5px;
+        align-items: center;
+    }
+
+    .nexus-typing.show {
+        display: flex;
+    }
+
+    .nexus-typing-dot {
+        width: 7px;
+        height: 7px;
+        background: var(--nexus-text-muted);
+        border-radius: 50%;
+        animation: nexus-typing-bounce 1.4s ease-in-out infinite;
+    }
+
+    .nexus-typing-dot:nth-child(2) { animation-delay: 0.16s; }
+    .nexus-typing-dot:nth-child(3) { animation-delay: 0.32s; }
+
+    @keyframes nexus-typing-bounce {
+        0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+        30% { transform: translateY(-6px); opacity: 1; }
+    }
+
+    /* ─── Quick Actions ─── */
+    .nexus-quick-actions {
+        padding: 8px 16px;
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        flex-shrink: 0;
+        border-top: 1px solid var(--nexus-glass-border);
+    }
+
+    .nexus-quick-actions::-webkit-scrollbar { height: 0; }
+
+    .nexus-quick-btn {
+        padding: 6px 14px;
+        background: var(--nexus-glass);
+        border: 1px solid var(--nexus-glass-border);
+        border-radius: 20px;
+        font-size: 12px;
+        color: var(--nexus-text-muted);
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.2s ease;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .nexus-quick-btn:hover {
+        background: rgba(99, 102, 241, 0.15);
+        color: var(--nexus-primary-hover);
+        border-color: rgba(99, 102, 241, 0.3);
+    }
+
+    /* ─── Input Area ─── */
+    .nexus-input-area {
+        padding: 14px 16px;
+        border-top: 1px solid var(--nexus-glass-border);
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        background: rgba(15, 23, 42, 0.6);
+        flex-shrink: 0;
+    }
+
+    .nexus-input-area input {
+        flex: 1;
+        background: var(--nexus-glass);
+        border: 1px solid var(--nexus-glass-border);
+        border-radius: 14px;
+        padding: 12px 16px;
+        font-size: 14px;
+        color: var(--nexus-text);
+        outline: none;
+        font-family: 'Inter', sans-serif;
+        transition: border-color 0.2s ease;
+    }
+
+    .nexus-input-area input::placeholder {
+        color: var(--nexus-text-muted);
+    }
+
+    .nexus-input-area input:focus {
+        border-color: var(--nexus-primary);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    }
+
+    .nexus-send-btn {
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, var(--nexus-primary), #7c3aed);
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        flex-shrink: 0;
+    }
+
+    .nexus-send-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
+    }
+
+    .nexus-send-btn:active {
+        transform: scale(0.96);
+    }
+
+    .nexus-send-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .nexus-send-btn svg {
+        width: 20px;
+        height: 20px;
+        fill: white;
+    }
+
+    /* ─── Powered By ─── */
+    .nexus-powered {
+        text-align: center;
+        padding: 6px;
+        font-size: 10px;
+        color: rgba(255, 255, 255, 0.2);
+        flex-shrink: 0;
+    }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 480px) {
+        #nexus-chat-window {
+            width: calc(100vw - 16px);
+            right: 8px;
+            bottom: 88px;
+            height: calc(100vh - 100px);
+            border-radius: 16px;
+        }
+
+        #nexus-chat-toggle {
+            right: 16px;
+            bottom: 16px;
+            width: 56px;
+            height: 56px;
+        }
+    }
+</style>
+
+<!-- Toggle FAB -->
+<button id="nexus-chat-toggle" onclick="NexusChat.toggle()" aria-label="Open Banking Assistant">
+    <span class="nexus-dot" id="nexus-notification-dot"></span>
+    <svg id="nexus-toggle-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+    </svg>
+</button>
+
+<!-- Chat Window -->
+<div id="nexus-chat-window">
+    <!-- Header -->
+    <div class="nexus-header">
+        <div class="nexus-avatar">🤖</div>
+        <div class="nexus-header-info">
+            <h3>Nexus AI Assistant</h3>
+            <span>Online now</span>
+        </div>
+        <button class="nexus-close-btn" onclick="NexusChat.toggle()" aria-label="Close chat">✕</button>
+    </div>
+
+    <!-- Messages -->
+    <div class="nexus-messages" id="nexus-messages">
+        <!-- Welcome message injected by JS -->
+    </div>
+
+    <!-- Typing indicator -->
+    <div class="nexus-typing" id="nexus-typing">
+        <div class="nexus-typing-dot"></div>
+        <div class="nexus-typing-dot"></div>
+        <div class="nexus-typing-dot"></div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="nexus-quick-actions" id="nexus-quick-actions">
+        <button class="nexus-quick-btn" onclick="NexusChat.quickSend('What\'s my balance?')">💰 Balance</button>
+        <button class="nexus-quick-btn" onclick="NexusChat.quickSend('Show my transactions')">📋 Transactions</button>
+        <button class="nexus-quick-btn" onclick="NexusChat.quickSend('Account info')">🏦 Account</button>
+        <button class="nexus-quick-btn" onclick="NexusChat.quickSend('Transaction summary')">📊 Summary</button>
+        <button class="nexus-quick-btn" onclick="NexusChat.quickSend('Help')">❓ Help</button>
+    </div>
+
+    <!-- Input -->
+    <div class="nexus-input-area">
+        <input type="text"
+               id="nexus-input"
+               placeholder="Ask me anything about your account..."
+               autocomplete="off"
+               onkeydown="if(event.key==='Enter')NexusChat.send()" />
+        <button class="nexus-send-btn" id="nexus-send-btn" onclick="NexusChat.send()" aria-label="Send message">
+            <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+    </div>
+
+    <!-- Footer -->
+    <div class="nexus-powered">Powered by Nexus AI ✨</div>
+</div>
+
+<script>
+const NexusChat = (() => {
+    const CHAT_URL = '/chat/';
+    let isOpen = false;
+    let isFirstOpen = true;
+
+    function getTime() {
+        return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function formatMessage(text) {
+        // Convert **bold** to <strong>
+        text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        // Convert newlines to <br>
+        text = text.replace(/\n/g, '<br>');
+        return text;
+    }
+
+    function addMessage(text, sender) {
+        const container = document.getElementById('nexus-messages');
+        const msg = document.createElement('div');
+        msg.className = `nexus-msg ${sender}`;
+        msg.innerHTML = `${formatMessage(text)}<span class="nexus-time">${getTime()}</span>`;
+        container.appendChild(msg);
+        container.scrollTop = container.scrollHeight;
+    }
+
+    function showTyping(show) {
+        document.getElementById('nexus-typing').classList.toggle('show', show);
+        if (show) {
+            const container = document.getElementById('nexus-messages');
+            container.scrollTop = container.scrollHeight;
+        }
+    }
+
+    function setLoading(loading) {
+        const btn = document.getElementById('nexus-send-btn');
+        const input = document.getElementById('nexus-input');
+        btn.disabled = loading;
+        input.disabled = loading;
+    }
+
+    async function sendMessage(message) {
+        if (!message.trim()) return;
+
+        addMessage(message, 'user');
+        document.getElementById('nexus-input').value = '';
+        showTyping(true);
+        setLoading(true);
+
+        try {
+            const response = await fetch(CHAT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: message }),
+            });
+
+            const data = await response.json();
+            showTyping(false);
+            addMessage(data.reply || 'Something went wrong. Please try again.', 'bot');
+        } catch (err) {
+            showTyping(false);
+            addMessage('⚠️ Connection error. Please check your network and try again.', 'bot');
+        } finally {
+            setLoading(false);
+            document.getElementById('nexus-input').focus();
+        }
+    }
+
+    return {
+        toggle() {
+            const window = document.getElementById('nexus-chat-window');
+            const btn = document.getElementById('nexus-chat-toggle');
+            const icon = document.getElementById('nexus-toggle-icon');
+            const dot = document.getElementById('nexus-notification-dot');
+
+            isOpen = !isOpen;
+            window.classList.toggle('visible', isOpen);
+            btn.classList.toggle('open', isOpen);
+
+            if (isOpen) {
+                // Change icon to close (X)
+                icon.innerHTML = '<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>';
+                dot.style.display = 'none';
+
+                if (isFirstOpen) {
+                    isFirstOpen = false;
+                    const name = '{{ request.user.first_name|default:"there" }}';
+                    addMessage(
+                        `Hey ${name}! 👋 Welcome to **Nexus AI**.\n\nI can check your balance, review transactions, and help with your account. Try the quick actions below or just ask me anything!`,
+                        'bot'
+                    );
+                }
+
+                document.getElementById('nexus-input').focus();
+            } else {
+                // Change back to chat icon
+                icon.innerHTML = '<path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>';
+            }
+        },
+
+        send() {
+            const input = document.getElementById('nexus-input');
+            sendMessage(input.value);
+        },
+
+        quickSend(msg) {
+            sendMessage(msg);
+        }
+    };
+})();
+</script>
+{% endif %}

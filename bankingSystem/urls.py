@@ -25,5 +25,6 @@ urlpatterns = [
     path(
         'transactions/',
         include('transactions.urls', namespace='transactions')
-    )
+    ),
+    path('chat/', include('chatbot.urls', namespace='chatbot')),
 ]
