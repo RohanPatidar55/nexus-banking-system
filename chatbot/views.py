@@ -5,14 +5,11 @@ import json
 
 from django.http import JsonResponse
 from django.views import View
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .services import get_chatbot_response
 
 
-@method_decorator(csrf_exempt, name='dispatch')
 class ChatbotAPIView(LoginRequiredMixin, View):
     """
     POST /chat/

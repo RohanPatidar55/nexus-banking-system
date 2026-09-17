@@ -18,6 +18,7 @@ class Transaction(models.Model):
         decimal_places=2,
         max_digits=12
     )
+    interest_period = models.DateField(null=True, blank=True)
     transaction_type = models.PositiveSmallIntegerField(
         choices=TRANSACTION_TYPE_CHOICES
     )
@@ -28,3 +29,13 @@ class Transaction(models.Model):
 
     class Meta:
         ordering = ['timestamp']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['account', 'interest_period'],
+                condition=models.Q(
+                    transaction_type=3,
+                    interest_period__isnull=False,
+                ),
+                name='unique_interest_period_per_account',
+            ),
+        ]

@@ -2,6 +2,8 @@ from dateutil.relativedelta import relativedelta
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import transaction
+from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import CreateView, ListView
@@ -12,6 +14,7 @@ from transactions.forms import (
     TransactionDateRangeForm,
     WithdrawForm,
 )
+from accounts.models import UserBankAccount
 from transactions.models import Transaction
 
 
@@ -21,6 +24,7 @@ class TransactionRepostView(LoginRequiredMixin, ListView):
     form_data = {}
 
     def get(self, request, *args, **kwargs):
+        self.form_data = {}
         form = TransactionDateRangeForm(request.GET or None)
         if form.is_valid():
             self.form_data = form.cleaned_data
@@ -81,35 +85,40 @@ class DepositMoneyView(TransactionCreateMixin):
 
     def form_valid(self, form):
         amount = form.cleaned_data.get('amount')
-        account = self.request.user.account
-
-        if not account.initial_deposit_date:
-            now = timezone.now()
-            next_interest_month = int(
-                12 / account.account_type.interest_calculation_per_year
+        with transaction.atomic():
+            account = (
+                UserBankAccount.objects
+                .select_for_update()
+                .select_related('account_type')
+                .get(pk=self.request.user.account.pk)
             )
-            account.initial_deposit_date = now
-            account.interest_start_date = (
-                now + relativedelta(
-                    months=+next_interest_month
+            if not account.initial_deposit_date:
+                now = timezone.now()
+                next_interest_month = int(
+                    12 / account.account_type.interest_calculation_per_year
                 )
-            )
+                account.initial_deposit_date = now.date()
+                account.interest_start_date = (
+                    now + relativedelta(months=+next_interest_month)
+                ).date()
 
-        account.balance += amount
-        account.save(
-            update_fields=[
+            account.balance += amount
+            account.save(update_fields=[
                 'initial_deposit_date',
                 'balance',
-                'interest_start_date'
-            ]
-        )
+                'interest_start_date',
+            ])
+            form.instance.account = account
+            form.instance.balance_after_transaction = account.balance
+            form.instance.save()
 
         messages.success(
             self.request,
             f'{amount}$ was deposited to your account successfully'
         )
 
-        return super().form_valid(form)
+        self.object = form.instance
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class WithdrawMoneyView(TransactionCreateMixin):
@@ -122,13 +131,31 @@ class WithdrawMoneyView(TransactionCreateMixin):
 
     def form_valid(self, form):
         amount = form.cleaned_data.get('amount')
+        with transaction.atomic():
+            account = (
+                UserBankAccount.objects
+                .select_for_update()
+                .select_related('account_type')
+                .get(pk=self.request.user.account.pk)
+            )
+            if amount > account.balance:
+                form.add_error(
+                    'amount',
+                    f'You have {account.balance} $. You can not withdraw '
+                    'more than your account balance',
+                )
+                return self.form_invalid(form)
 
-        self.request.user.account.balance -= form.cleaned_data.get('amount')
-        self.request.user.account.save(update_fields=['balance'])
+            account.balance -= amount
+            account.save(update_fields=['balance'])
+            form.instance.account = account
+            form.instance.balance_after_transaction = account.balance
+            form.instance.save()
 
         messages.success(
             self.request,
             f'Successfully withdrawn {amount}$ from your account'
         )
 
-        return super().form_valid(form)
+        self.object = form.instance
+        return HttpResponseRedirect(self.get_success_url())

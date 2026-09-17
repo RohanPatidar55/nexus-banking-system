@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth import get_user_model, login, logout
 from django.contrib.auth.views import LoginView
+from django.db import transaction
 from django.shortcuts import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, RedirectView
@@ -28,10 +29,11 @@ class UserRegistrationView(TemplateView):
         address_form = UserAddressForm(self.request.POST)
 
         if registration_form.is_valid() and address_form.is_valid():
-            user = registration_form.save()
-            address = address_form.save(commit=False)
-            address.user = user
-            address.save()
+            with transaction.atomic():
+                user = registration_form.save()
+                address = address_form.save(commit=False)
+                address.user = user
+                address.save()
 
             login(self.request, user)
             messages.success(

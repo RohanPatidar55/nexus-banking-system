@@ -24,7 +24,8 @@ class TransactionForm(forms.ModelForm):
 
     def save(self, commit=True):
         self.instance.account = self.account
-        self.instance.balance_after_transaction = self.account.balance
+        if self.instance.pk is None:
+            self.instance.balance_after_transaction = self.account.balance
         return super().save()
 
 
@@ -78,16 +79,24 @@ class TransactionDateRangeForm(forms.Form):
 
     def clean_daterange(self):
         daterange = self.cleaned_data.get("daterange")
-        print(daterange)
+        if not daterange:
+            return daterange
+
+        parts = [part.strip() for part in daterange.split(' - ')]
+        if len(parts) != 2:
+            raise forms.ValidationError("Please select a date range.")
 
         try:
-            daterange = daterange.split(' - ')
-            print(daterange)
-            if len(daterange) == 2:
-                for date in daterange:
-                    datetime.datetime.strptime(date, '%Y-%m-%d')
-                return daterange
-            else:
-                raise forms.ValidationError("Please select a date range.")
-        except (ValueError, AttributeError):
+            start, end = (
+                datetime.datetime.strptime(part, '%Y-%m-%d').date()
+                for part in parts
+            )
+        except ValueError:
             raise forms.ValidationError("Invalid date range")
+
+        if start > end:
+            raise forms.ValidationError(
+                "The start date must be before the end date."
+            )
+
+        return [start, end]
