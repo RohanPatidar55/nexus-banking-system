@@ -1,0 +1,58 @@
+ERROR 2026-10-04 16:16:50,506 log 35360 140206923574208 Internal Server Error: /transactions/report/
+Traceback (most recent call last):
+  File "/home/roan/copilot-worktrees/rohanpatidar55-laughing-waddle/rohanpatidar55-probable-engine/venv/lib/python3.14/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/home/roan/copilot-worktrees/rohanpatidar55-laughing-waddle/rohanpatidar55-probable-engine/venv/lib/python3.14/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/roan/copilot-worktrees/rohanpatidar55-laughing-waddle/rohanpatidar55-probable-engine/venv/lib/python3.14/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/roan/copilot-worktrees/rohanpatidar55-laughing-waddle/rohanpatidar55-probable-engine/venv/lib/python3.14/site-packages/django/contrib/auth/mixins.py", line 72, in dispatch
+    return self.handle_no_permission()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/roan/copilot-worktrees/rohanpatidar55-laughing-waddle/rohanpatidar55-probable-engine/venv/lib/python3.14/site-packages/django/contrib/auth/mixins.py", line 51, in handle_no_permission
+    resolved_login_url = resolve_url(self.get_login_url())
+  File "/home/roan/copilot-worktrees/rohanpatidar55-laughing-waddle/rohanpatidar55-probable-engine/venv/lib/python3.14/site-packages/django/shortcuts.py", line 180, in resolve_url
+    return reverse(to, args=args, kwargs=kwargs)
+  File "/home/roan/copilot-worktrees/rohanpatidar55-laughing-waddle/rohanpatidar55-probable-engine/venv/lib/python3.14/site-packages/django/urls/base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/roan/copilot-worktrees/rohanpatidar55-laughing-waddle/rohanpatidar55-probable-engine/venv/lib/python3.14/site-packages/django/urls/resolvers.py", line 851, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'login' not found. 'login' is not a valid view function or pattern name.
+ERROR 2026-10-04 16:16:52,012 log 35360 140206923574208 Internal Server Error: /transactions/report/
+Traceback (most recent call last):
+  File "/home/roan/copilot-worktrees/rohanpatidar55-laughing-waddle/rohanpatidar55-probable-engine/venv/lib/python3.14/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/home/roan/copilot-worktrees/rohanpatidar55-laughing-waddle/rohanpatidar55-probable-engine/venv/lib/python3.14/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+  File "/home/roan/copilot-worktrees/rohanpatidar55-laughing-waddle/rohanpatidar55-probable-engine/venv/lib/python3.14/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/roan/copilot-worktrees/rohanpatidar55-laughing-waddle/rohanpatidar55-probable-engine/venv/lib/python3.14/site-packages/django/template/response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/roan/copilot-worktrees/rohanpatidar55-laughing-waddle/rohanpatidar55-probable-engine/venv/lib/python3.14/site-packages/django/template/backends/django.py", line 61, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/home/roan/copilot-worktrees/rohanpatidar55-laughing-waddle/rohanpatidar55-probable-engine/venv/lib/python3.14/site-packages/django/template/base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "/home/roan/copilot-worktrees/rohanpatidar55-laughing-waddle/rohanpatidar55-probable-engine/venv/lib/python3.14/site-packages/django/test/utils.py", line 110, in instrumented_test_render
+    template_rendered.send(sender=self, template=self, context=context)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/roan/copilot-worktrees/rohanpatidar55-laughing-waddle/rohanpatidar55-probable-engine/venv/lib/python3.14/site-packages/django/dispatch/dispatcher.py", line 189, in send
+    response = receiver(signal=self, sender=sender, **named)
+  File "/home/roan/copilot-worktrees/rohanpatidar55-laughing-waddle/rohanpatidar55-probable-engine/venv/lib/python3.14/site-packages/django/test/client.py", line 275, in store_rendered_templates
+    store["context"].append(copy(context))
+                            ~~~~^^^^^^^^^
+  File "/usr/lib/python3.14/copy.py", line 82, in copy
+    return copier(x)
+  File "/home/roan/copilot-worktrees/rohanpatidar55-laughing-waddle/rohanpatidar55-probable-engine/venv/lib/python3.14/site-packages/django/template/context.py", line 158, in __copy__
+    duplicate = super().__copy__()
+  File "/home/roan/copilot-worktrees/rohanpatidar55-laughing-waddle/rohanpatidar55-probable-engine/venv/lib/python3.14/site-packages/django/template/context.py", line 39, in __copy__
+    duplicate.dicts = self.dicts[:]
+    ^^^^^^^^^^^^^^^
+AttributeError: 'super' object has no attribute 'dicts' and no __dict__ for setting new attributes
+INFO 2026-10-04 16:19:46,816 autoreload 40745 139754805971904 Watching for file changes with StatReloader
+INFO 2026-10-04 16:20:36,513 basehttp 40745 139754724980416 "GET / HTTP/1.1" 200 3209
