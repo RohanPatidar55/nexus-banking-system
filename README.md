@@ -82,36 +82,6 @@ python manage.py runserver
 
 Navigate to `http://localhost:8000`
 
-## 📸 Screenshots
-
-### Home Page
-![Banking System Home Page](screenshots/01-home.png)
-*Welcome screen with feature highlights and call-to-action buttons*
-
-### Login Page
-![Banking System Login Page](screenshots/02-login.png)
-*Email-based authentication with secure password input*
-
-### Dashboard - Account Overview & Transactions
-![Banking System Dashboard](screenshots/03-dashboard.png)
-*User dashboard showing account balance, account type, and quick action buttons*
-
-### Transaction Report
-![Banking System Transaction Report](screenshots/05-transactions.png)
-*Transaction history with date filtering and detailed transaction records*
-
-### Deposit Money Form
-![Banking System Deposit Form](screenshots/04-deposit.png)
-*Deposit transaction interface with amount input and description field*
-
-### Withdrawal Money Form
-![Banking System Withdrawal Form](screenshots/07-withdrawal.png)
-*Withdrawal transaction interface with validation for maximum withdrawal limits*
-
-### Admin Panel
-![Django Administration Panel](screenshots/08-admin.png)
-*Comprehensive admin dashboard for managing users, accounts, transactions, and audit logs*
-
 ## 📝 Demo Credentials
 
 ```
