@@ -85,158 +85,32 @@ Navigate to `http://localhost:8000`
 ## 📸 Screenshots
 
 ### Home Page
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│ Banking System                                                  Login | Register │
-├─────────────────────────────────────────────────────────────────────────┤
-│                                                                         │
-│                    Welcome to Nexus Banking System                      │
-│                                                                         │
-│                   Secure. Reliable. Modern Banking                      │
-│                                                                         │
-│  Features:                                                              │
-│  • Multiple account types (Savings, Current, Premium)                   │
-│  • Real-time balance tracking                                           │
-│  • Fast deposits and withdrawals                                        │
-│  • AI-powered banking assistant                                         │
-│  • Comprehensive transaction history                                    │
-│                                                                         │
-│                                                                         │
-│                        [Login]    [Register Now]                        │
-│                                                                         │
-└─────────────────────────────────────────────────────────────────────────┘
-```
+![Banking System Home Page](screenshots/01-home.png)
+*Welcome screen with feature highlights and call-to-action buttons*
 
 ### Login Page
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│ Banking System                                                  Login | Register │
-├─────────────────────────────────────────────────────────────────────────┤
-│                                                                         │
-│                          User Login                                     │
-│                                                                         │
-│   Email:        [________________________________]                    │
-│                                                                         │
-│   Password:     [________________________________]                    │
-│                                                                         │
-│                        [Sign In]                                        │
-│                                                                         │
-│   Don't have an account? [Register here]                               │
-│                                                                         │
-└─────────────────────────────────────────────────────────────────────────┘
-```
+![Banking System Login Page](screenshots/02-login.png)
+*Email-based authentication with secure password input*
 
-### Registration Page
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│ Banking System                                                  Login | Register │
-├─────────────────────────────────────────────────────────────────────────┤
-│                                                                         │
-│                       Create Your Account                              │
-│                                                                         │
-│   First Name:       [________________________]                         │
-│   Last Name:        [________________________]                         │
-│   Email:            [________________________]                         │
-│   Password:         [________________________]                         │
-│   Confirm Password: [________________________]                         │
-│                                                                         │
-│   Account Type:     [Savings Account ▼]                               │
-│   Gender:           [Male ▼]                                          │
-│   Birth Date:       [__/__/____]                                      │
-│                                                                         │
-│   Street Address:   [________________________]                         │
-│   City:             [________________________]                         │
-│   Postal Code:      [________________________]                         │
-│   Country:          [________________________]                         │
-│                                                                         │
-│                   [Create Account]                                     │
-│                                                                         │
-└─────────────────────────────────────────────────────────────────────────┘
-```
+### Dashboard - Account Overview & Transactions
+![Banking System Dashboard](screenshots/03-dashboard.png)
+*User dashboard showing account balance, account type, and quick action buttons*
 
-### Dashboard - Transaction Report
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│ Banking System                              Welcome, Demo User | Logout │
-├─────────────────────────────────────────────────────────────────────────┤
-│                                                                         │
-│  Account Overview                                                       │
-│  ┌─────────────────────────────────────────────────────────────────┐  │
-│  │ Account Type: Savings Account                                   │  │
-│  │ Account Number: 1000100                                         │  │
-│  │ Current Balance: $6,000.00                                      │  │
-│  │ Interest Rate: 4.5% (Quarterly)                                 │  │
-│  │ Max Withdrawal: $5,000.00                                       │  │
-│  └─────────────────────────────────────────────────────────────────┘  │
-│                                                                         │
-│  [Deposit Money]  [Withdraw Money]  [View Report]                     │
-│                                                                         │
-│  Transaction History                                                    │
-│  ┌──────────────┬──────────────┬───────────┬─────────────────────┐   │
-│  │ Date         │ Type         │ Amount    │ Balance After       │   │
-│  ├──────────────┼──────────────┼───────────┼─────────────────────┤   │
-│  │ 2026-10-04   │ DEPOSIT      │ $1,000.00 │ $6,000.00           │   │
-│  │ (Previous)   │ (Previous)   │ (Previous)│ (Previous)          │   │
-│  └──────────────┴──────────────┴───────────┴─────────────────────┘   │
-│                                                                         │
-│  Date Range Filter: [From] __/__/__ [To] __/__/__ [Filter]            │
-│                                                                         │
-└─────────────────────────────────────────────────────────────────────────┘
-```
+### Transaction Report
+![Banking System Transaction Report](screenshots/05-transactions.png)
+*Transaction history with date filtering and detailed transaction records*
 
-### Deposit Transaction Page
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│ Banking System                              Welcome, Demo User | Logout │
-├─────────────────────────────────────────────────────────────────────────┤
-│                                                                         │
-│  Current Balance: $6,000.00                                             │
-│                                                                         │
-│  Deposit Money                                                          │
-│  ┌─────────────────────────────────────────────────────────────────┐  │
-│  │                                                                 │  │
-│  │  Amount:  [________________________]                            │  │
-│  │                                                                 │  │
-│  │  Minimum deposit: $100                                          │  │
-│  │                                                                 │  │
-│  │           [Deposit]                                             │  │
-│  │                                                                 │  │
-│  └─────────────────────────────────────────────────────────────────┘  │
-│                                                                         │
-│  ✓ Success: $500.00 deposited                                          │
-│  New Balance: $6,500.00                                                 │
-│                                                                         │
-└─────────────────────────────────────────────────────────────────────────┘
-```
+### Deposit Money Form
+![Banking System Deposit Form](screenshots/04-deposit.png)
+*Deposit transaction interface with amount input and description field*
 
-### Admin Panel - Django Admin
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│ Django Administration                                        Logout     │
-├─────────────────────────────────────────────────────────────────────────┤
-│                                                                         │
-│  Site administration                                                    │
-│                                                                         │
-│  Accounts                                                               │
-│  • Users                                    [5 entries]                 │
-│  • Bank Account Types                       [4 entries]                 │
-│  • User Bank Accounts                       [5 entries]                 │
-│  • User Addresses                           [5 entries]                 │
-│                                                                         │
-│  Transactions                                                           │
-│  • Transactions                             [5 entries]                 │
-│  • Transaction Audit Logs                   [Complete trails]           │
-│                                                                         │
-│  Django Celery Beat                                                     │
-│  • Periodic Tasks                           [Scheduled jobs]            │
-│  • Cron Schedules                           [Configurations]            │
-│                                                                         │
-│  Authentication and Authorization                                       │
-│  • Groups                                   [0 entries]                 │
-│  • Permissions                              [View/Add/Change/Delete]    │
-│                                                                         │
-└─────────────────────────────────────────────────────────────────────────┘
-```
+### Withdrawal Money Form
+![Banking System Withdrawal Form](screenshots/07-withdrawal.png)
+*Withdrawal transaction interface with validation for maximum withdrawal limits*
+
+### Admin Panel
+![Django Administration Panel](screenshots/08-admin.png)
+*Comprehensive admin dashboard for managing users, accounts, transactions, and audit logs*
 
 ## 📝 Demo Credentials
 
